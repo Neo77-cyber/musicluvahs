@@ -661,3 +661,27 @@ class ProfileValidationTests(TestCase):
 
     def test_mangled_chat_link_does_not_crash(self):
         self.assertRedirects(self.client.get("/messages/?c=abc"), "/messages/", fetch_redirect_response=False)
+
+
+class DeployFilesTests(TestCase):
+    """The Docker image installs from requirements.txt — it must list every package in the Pipfile
+    (pywebpush once went missing there, which would have broken phone notifications on Render)."""
+    def test_requirements_cover_pipfile(self):
+        import re
+        from pathlib import Path
+        root = Path(__file__).resolve().parents[2]
+        pipfile = (root / "Pipfile").read_text()
+        packages = re.search(r"\[packages\](.*?)(\n\[|\Z)", pipfile, re.S).group(1)
+        wanted = {re.split(r"\s*=", line)[0].strip().strip('"').lower().replace("_", "-")
+                  for line in packages.splitlines() if "=" in line and not line.strip().startswith("#")}
+        pinned = {re.split(r"[=<>;\[ ]", line)[0].strip().lower().replace("_", "-")
+                  for line in (root / "requirements.txt").read_text().splitlines()
+                  if line.strip() and not line.startswith(("#", "-"))}
+        self.assertEqual(sorted(wanted - pinned), [], "Run: pipenv requirements > requirements.txt")
+
+    def test_render_blueprint_is_valid_yaml_with_both_services(self):
+        from pathlib import Path
+        text = (Path(__file__).resolve().parents[2] / "render.yaml").read_text()
+        for needle in ["type: web", "type: worker", "runtime: docker", "dockerCommand: celery -A config worker -B",
+                       "key: FERNET_KEY", "key: VAPID_PRIVATE_KEY", "config.settings.prod"]:
+            self.assertIn(needle, text)

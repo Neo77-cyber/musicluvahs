@@ -16,8 +16,10 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "cloudinary_storage",
+    # staticfiles BEFORE cloudinary_storage: Cloudinary only stores uploaded photos here, and its own
+    # collectstatic skips images (e.g. admin/img/*.svg), which made the production static build fail.
     "django.contrib.staticfiles",
+    "cloudinary_storage",
     "cloudinary",
     "axes",
     "apps.users",
@@ -78,7 +80,7 @@ DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 SPOTIFY_CLIENT_ID = env("SPOTIFY_CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = env("SPOTIFY_CLIENT_SECRET")
-SPOTIFY_REDIRECT_URI = env("SPOTIFY_REDIRECT_URI")
+SPOTIFY_REDIRECT_URI = env("SPOTIFY_REDIRECT_URI", default="")  # unused since Spotify login was removed; kept so old .env files still load
 FERNET_KEY = env("FERNET_KEY")
 LASTFM_API_KEY = env("LASTFM_API_KEY", default="")
 
