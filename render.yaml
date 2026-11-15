@@ -18,6 +18,8 @@ envVarGroups:
         value: Music Luvers <hello@musicluvers.site>
       - key: RESEND_DOMAIN_VERIFIED
         value: "False"              # set to True once musicluvers.site shows Verified in Resend
+      - key: DJANGO_SECRET_KEY      # generated once by Render, shared by web + worker
+        generateValue: true
 
 services:
   # Website + live updates (Daphne). On start it runs migrations and collectstatic (docker-entrypoint.sh).
@@ -32,8 +34,6 @@ services:
       - fromGroup: musicluvers-config
       - key: PORT
         value: "10000"
-      - key: DJANGO_SECRET_KEY
-        generateValue: true
       - key: DATABASE_URL           # Neon connection string
         sync: false
       - key: REDIS_URL              # Upstash rediss:// URL
@@ -68,8 +68,6 @@ services:
     autoDeploy: true
     envVars:
       - fromGroup: musicluvers-config
-      - key: DJANGO_SECRET_KEY
-        fromService: { type: web, name: musicluvers-web, envVarKey: DJANGO_SECRET_KEY }
       - key: DATABASE_URL
         fromService: { type: web, name: musicluvers-web, envVarKey: DATABASE_URL }
       - key: REDIS_URL
