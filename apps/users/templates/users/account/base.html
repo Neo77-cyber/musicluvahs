@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,7 +23,7 @@
 </head>
 <body>
   <main class="account-page">
-    <a href="{% url 'users:home' %}" class="brand"><i class="fa-solid fa-music"></i> Music Luvers</a>
+    <a href="{% url 'users:home' %}" class="brand"><img src="{% static 'icons/icon-192.png' %}" alt="" class="brand-logo" width="28" height="28" style="width:28px;height:28px;border-radius:7px;vertical-align:middle;flex-shrink:0;"> Music Luvers</a>
     {% block content %}{% endblock %}
   </main>
 </body>

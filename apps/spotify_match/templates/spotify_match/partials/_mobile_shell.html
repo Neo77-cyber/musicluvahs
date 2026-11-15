@@ -1,10 +1,11 @@
+{% load static %}
 {% comment %}
 Phone-only top bar (logo + bell) and bottom tab bar, shared by every signed-in page.
   active      = discover | matches | messages | sound | profile
   on_dashboard = True on the dashboard, where Discover / My Sound / Profile swap the tab in place.
 {% endcomment %}
 <header class="m-topbar">
-  <a href="{% url 'spotify_match:dashboard' %}" class="m-brand"><i class="fa-solid fa-music"></i> Music Luvers</a>
+  <a href="{% url 'spotify_match:dashboard' %}" class="m-brand"><img src="{% static 'icons/icon-192.png' %}" alt="" class="brand-logo" width="26" height="26" style="width:26px;height:26px;border-radius:6px;vertical-align:middle;flex-shrink:0;"> Music Luvers</a>
   {% include "spotify_match/partials/_notification_bell_mobile.html" %}
 </header>
 
